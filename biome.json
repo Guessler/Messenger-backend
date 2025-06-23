@@ -1,0 +1,23 @@
+{
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "all": true
+        }
+    },
+    "formatter": {
+        "enabled": true
+    },
+    "javascript": {
+        "formatter": {
+            "indentSize": 2,
+            "quoteStyle": "single"
+        }
+    },
+    "typescript": {
+        "formatter": {
+            "indentSize": 2,
+            "quoteStyle": "single"
+        }
+    }
+}
