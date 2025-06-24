@@ -1,12 +1,23 @@
-import { Model } from 'sequelize';
+import { ApiProperty } from '@nestjs/swagger';
+import { Model } from 'sequelize-typescript';
 import { Column, DataType, Table } from 'sequelize-typescript';
 
-Table({ tableName: 'users' });
-export class User extends Model<User> {
-    @Column({ type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true,})
-    id: number;
-    @Column({ type: DataType.STRING, unique: true, allowNull: false })
+interface UserCreationAttrs {
     email: string;
-    @Column({ type: DataType.STRING, unique: true })
     password: string;
+}
+
+@Table({ tableName: 'users' })
+export class User extends Model<User, UserCreationAttrs> {
+    @ApiProperty({example: '1', description: 'Уникальный идентификатор'})
+    @Column({ type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true })
+    declare id: number;
+    @ApiProperty({example: 'user@gmail.com', description: 'почтовый ящик'})
+
+    @Column({ type: DataType.STRING, unique: true, allowNull: false })
+    declare email: string;
+    @ApiProperty({example: 'password123', description: 'пароль пользователя'})
+
+    @Column({ type: DataType.STRING })
+    declare password: string;
 }
