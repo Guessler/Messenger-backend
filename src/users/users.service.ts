@@ -19,6 +19,7 @@ export class UsersService {
         }
 
         await user.$set('roles', [role.id]);
+        user.roles = [role]
         return user;
     }
     async getAllUsers() {
@@ -26,5 +27,10 @@ export class UsersService {
             include: ['roles']
         });
         return users
+    }
+
+    async getUsersByEmail (email:string){
+        const user = await this.userRepository.findOne({where: {email}, include: ['roles']})
+        return user
     }
 }
