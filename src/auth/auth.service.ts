@@ -25,6 +25,10 @@ export class AuthService {
         return this.generateToken(user)
     }
 
+    // async logout (token: string, expiresIn: number) {
+    //     await this.blacklistService.addToBlacklist(token, expiresIn);
+    // }
+
     private async generateToken(user: User) {
         const payload = { email: user.email, id: user.id, roles: user.roles }
         return {

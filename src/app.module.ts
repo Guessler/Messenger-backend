@@ -9,6 +9,10 @@ import { RolesModule } from './roles/roles.module';
 import { Role } from './roles/roles.model';
 import { UserRoles } from './roles/user-roles.model';
 import { AuthModule } from './auth/auth.module';
+import { WorkspaceModule } from './workspace/workspace.module';
+import { MessageModule } from './message/message.module';
+import { Workspace } from './workspace/workspace.model';
+import { Message } from './message/message.model';
 
 @Module({
   imports: [
@@ -23,11 +27,13 @@ import { AuthModule } from './auth/auth.module';
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
       autoLoadModels: true,
-      models: [User, Role, UserRoles],
+      models: [User, Role, UserRoles, Workspace, Message],
     }),
     UsersModule,
     RolesModule,
     AuthModule,
+    WorkspaceModule,
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
