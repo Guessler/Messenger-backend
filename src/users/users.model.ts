@@ -14,12 +14,16 @@ export class User extends Model<User, UserCreationAttrs> {
     @ApiProperty({example: '1', description: 'Уникальный идентификатор'})
     @Column({ type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true })
     declare id: number;
-    @ApiProperty({example: 'user@gmail.com', description: 'почтовый ящик'})
 
+    @ApiProperty({example: 'Кирилл', description: 'имя пользователя'})
+    @Column({ type: DataType.STRING, allowNull: false })
+    declare name: string;
+    
+    @ApiProperty({example: 'user@gmail.com', description: 'почтовый ящик'})
     @Column({ type: DataType.STRING, unique: true, allowNull: false })
     declare email: string;
+    
     @ApiProperty({example: 'password123', description: 'пароль пользователя'})
-
     @Column({ type: DataType.STRING })
     declare password: string;
 
