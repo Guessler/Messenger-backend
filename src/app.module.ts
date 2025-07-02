@@ -13,6 +13,9 @@ import { WorkspaceModule } from './workspace/workspace.module';
 import { MessageModule } from './message/message.module';
 import { Workspace } from './workspace/workspace.model';
 import { Message } from './message/message.model';
+import { ContactsModule } from './contacts/contacts.module';
+import { ConversationsModule } from './conversations/conversations.module';
+import { Contact } from './contacts/contacts.model';
 
 @Module({
   imports: [
@@ -27,13 +30,15 @@ import { Message } from './message/message.model';
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
       autoLoadModels: true,
-      models: [User, Role, UserRoles, Workspace, Message],
+      models: [User, Role, UserRoles, Workspace, Message, Contact],
     }),
     UsersModule,
     RolesModule,
     AuthModule,
     WorkspaceModule,
     MessageModule,
+    ContactsModule,
+    ConversationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
