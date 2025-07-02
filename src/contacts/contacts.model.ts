@@ -1,11 +1,10 @@
-import { Table, Model } from 'sequelize-typescript';
-import { Column, DataType, ForeignKey } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
+import { Column, DataType, Model, Table, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { User } from '../users/users.model';
 
 @Table({ tableName: 'contacts' })
 export class Contact extends Model<Contact> {
-    @ApiProperty({ example: '1', description: 'Уникальный ID записи контакта' })
+    @ApiProperty({ example: '1', description: 'Уникальный ID контакта' })
     @Column({
         type: DataType.INTEGER,
         unique: true,
@@ -14,7 +13,7 @@ export class Contact extends Model<Contact> {
     })
     declare id: number;
 
-    @ApiProperty({ example: '100', description: 'ID пользователя, который добавил контакт' })
+    @ApiProperty({ example: '100', description: 'ID владельца' })
     @ForeignKey(() => User)
     @Column({
         type: DataType.INTEGER,
@@ -22,7 +21,7 @@ export class Contact extends Model<Contact> {
     })
     owner_id: number;
 
-    @ApiProperty({ example: '101', description: 'ID пользователя, который является контактом' })
+    @ApiProperty({ example: '101', description: 'ID контакта' })
     @ForeignKey(() => User)
     @Column({
         type: DataType.INTEGER,
@@ -30,9 +29,9 @@ export class Contact extends Model<Contact> {
     })
     contact_id: number;
 
-    @ApiProperty({ example: 'JohnDoe', description: 'Псевдоним для контакта (необязательно)' })
+    @ApiProperty({ example: 'JohnDoe', description: 'Псевдоним (опционально)' })
     @Column({
-        type: DataType.STRING(50),
+        type: DataType.STRING,
         allowNull: true,
     })
     nickname: string;
@@ -44,10 +43,16 @@ export class Contact extends Model<Contact> {
     })
     is_blocked: boolean;
 
-    @ApiProperty({ example: '2025-04-05T12:00:00Z', description: 'Дата добавления контакта' })
+    @ApiProperty({ example: '2025-04-05T12:00:00Z', description: 'Дата создания' })
     @Column({
         type: DataType.DATE,
         defaultValue: DataType.NOW,
     })
     created_at: Date;
+
+    @BelongsTo(() => User, 'contact_id')
+    contact: User;
+
+    @BelongsTo(() => User, 'owner_id')
+    owner: User;
 }

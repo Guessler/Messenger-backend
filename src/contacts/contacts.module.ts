@@ -7,9 +7,9 @@ import { User } from '../users/users.model';
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([Contact, User]), // Импортируем модели Contact и User
+    SequelizeModule.forFeature([Contact, User]),
   ],
-  providers: [ContactsService], // Объявляем сервис
-  controllers: [ContactsController], // Объявляем контроллер
+  providers: [ContactsService],
+  controllers: [ContactsController],
 })
 export class ContactsModule {}
