@@ -30,8 +30,4 @@ export class User extends Model<User, UserCreationAttrs> {
 
     @BelongsToMany (()=> Role, () => UserRoles)
     roles: Role[]
-
-
-    @BelongsToMany(() => User, () => Contact, 'userId', 'contactId')
-    contacts: User[];
 }

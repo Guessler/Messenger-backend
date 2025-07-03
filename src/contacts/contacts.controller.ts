@@ -2,52 +2,48 @@ import { Controller, Get, Post, Body, Param, Put, Delete, Query } from '@nestjs/
 import { ContactsService } from './contacts.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Contact } from './contacts.model';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('Contacts')
 @Controller('contacts')
 export class ContactsController {
     constructor(private readonly contactsService: ContactsService) { }
 
-
-    @ApiOperation({ summary: 'Создание нового контакта' })
-    @ApiResponse({ status: 201, description: 'Контакт успешно создан' })
+    @ApiOperation({ summary: 'Создание контакта' })
+    @ApiResponse({ status: 201, description: 'Контакт создан', type: Contact })
     @Post()
-    async create(@Body() createContactDto: CreateContactDto): Promise<Contact> {
-        return this.contactsService.create(createContactDto);
+    async create(@Body() dto: CreateContactDto): Promise<Contact> {
+        return this.contactsService.create(dto);
     }
 
-
     @ApiOperation({ summary: 'Получение всех контактов пользователя' })
-    @ApiResponse({ status: 200, description: 'Список контактов' })
+    @ApiResponse({ status: 200, description: 'Список контактов', type: [Contact] })
     @Get()
     async findAll(@Query('ownerId') ownerId: number): Promise<Contact[]> {
         return this.contactsService.findAll(ownerId);
     }
 
-
     @ApiOperation({ summary: 'Получение контакта по ID' })
-    @ApiResponse({ status: 200, description: 'Контакт' })
+    @ApiResponse({ status: 200, description: 'Контакт найден', type: Contact })
     @ApiResponse({ status: 404, description: 'Контакт не найден' })
     @Get(':id')
     async findOne(@Param('id') id: number): Promise<Contact> {
         return this.contactsService.findOne(id);
     }
 
-
     @ApiOperation({ summary: 'Обновление контакта' })
-    @ApiResponse({ status: 200, description: 'Контакт успешно обновлен' })
-    @ApiResponse({ status: 404, description: 'Контакт не найден' })
+    @ApiResponse({ status: 200, description: 'Контакт обновлён', type: Contact })
     @Put(':id')
-    async update(@Param('id') id: number, @Body() updateContactDto: UpdateContactDto): Promise<Contact> {
-        return this.contactsService.update(id, updateContactDto);
+    async update(
+        @Param('id') id: number,
+        @Body() dto: UpdateContactDto,
+    ): Promise<Contact> {
+        return this.contactsService.update(id, dto);
     }
 
-
     @ApiOperation({ summary: 'Удаление контакта' })
-    @ApiResponse({ status: 200, description: 'Контакт успешно удален' })
-    @ApiResponse({ status: 404, description: 'Контакт не найден' })
+    @ApiResponse({ status: 200, description: 'Контакт удалён', type: Contact })
     @Delete(':id')
     async remove(@Param('id') id: number): Promise<Contact> {
         return this.contactsService.remove(id);

@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString, MinLength, MaxLength } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class CreateContactDto {
     @IsNumber()
@@ -9,7 +9,10 @@ export class CreateContactDto {
 
     @IsOptional()
     @IsString()
-    @MinLength(2)
     @MaxLength(50)
     nickname?: string;
+
+    @IsOptional()
+    @IsBoolean()
+    is_blocked?: boolean;
 }

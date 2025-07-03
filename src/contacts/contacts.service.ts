@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Contact } from './contacts.model';
 import { User } from '../users/users.model';
@@ -7,102 +7,64 @@ import { UpdateContactDto } from './dto/update-contact.dto';
 
 @Injectable()
 export class ContactsService {
-    constructor(
-        @InjectModel(Contact) private contactModel: typeof Contact,
-        @InjectModel(User) private userModel: typeof User,
-    ) { }
+  constructor(
+    @InjectModel(Contact) private contactModel: typeof Contact,
+    @InjectModel(User) private userModel: typeof User,
+  ) {}
 
+  async create(dto: CreateContactDto): Promise<Contact> {
+    const { owner_id, contact_id, nickname } = dto;
 
-    async create(createContactDto: CreateContactDto): Promise<Contact> {
-        const { owner_id, contact_id, nickname } = createContactDto;
+    // Проверяем, что пользователи существуют
+    const owner = await this.userModel.findByPk(owner_id);
+    if (!owner) throw new HttpException('Владелец не найден', HttpStatus.NOT_FOUND);
 
-        const owner = await this.userModel.findByPk(owner_id);
-        if (!owner) {
-            throw new Error('Пользователь не найден');
-        }
+    const contactUser = await this.userModel.findByPk(contact_id);
+    if (!contactUser) throw new HttpException('Контакт не найден', HttpStatus.NOT_FOUND);
 
-        const contactUser = await this.userModel.findByPk(contact_id);
-        if (!contactUser) {
-            throw new Error('Контактный пользователь не найден');
-        }
+    // Проверяем, что такой контакт ещё не добавлен
+    const existing = await this.contactModel.findOne({
+      where: { owner_id, contact_id },
+    });
+    if (existing) throw new HttpException('Контакт уже существует', HttpStatus.CONFLICT);
 
-        const existingContact = await this.contactModel.findOne({
-            where: { owner_id, contact_id },
-        });
-        if (existingContact) {
-            throw new Error('Контакт уже добавлен');
-        }
+    return this.contactModel.create(dto);
+  }
 
-        const contact = await this.contactModel.create({
-            owner_id,
-            contact_id,
-            nickname,
-        });
+  async findAll(ownerId: number): Promise<Contact[]> {
+    return this.contactModel.findAll({
+      where: { owner_id: ownerId },
+      include: [
+        { model: User, as: 'contact', attributes: ['id', 'name', 'email'] },
+        { model: User, as: 'owner', attributes: ['id', 'name', 'email'] },
+      ],
+    });
+  }
 
-        return contact;
-    }
+  async findOne(id: number): Promise<Contact> {
+    const contact = await this.contactModel.findByPk(id, {
+      include: [
+        { model: User, as: 'contact', attributes: ['id', 'name', 'email'] },
+        { model: User, as: 'owner', attributes: ['id', 'name', 'email'] },
+      ],
+    });
 
+    if (!contact) throw new HttpException('Контакт не найден', HttpStatus.NOT_FOUND);
+    return contact;
+  }
 
-    async findAll(ownerId: number): Promise<Contact[]> {
-        return this.contactModel.findAll({
-            where: { owner_id: ownerId },
-            include: [{ model: User, as: 'contact', attributes: ['id', 'username'] }],
-        });
-    }
+  async update(id: number, dto: UpdateContactDto): Promise<Contact> {
+    const contact = await this.contactModel.findByPk(id);
+    if (!contact) throw new HttpException('Контакт не найден', HttpStatus.NOT_FOUND);
 
+    return contact.update(dto);
+  }
 
-    async findOne(id: number): Promise<Contact> {
-        const contact = await this.contactModel.findByPk(id, {
-            include: [{ model: User, as: 'contact', attributes: ['id', 'username'] }],
-        });
-    
-        if (!contact) {
-            throw new Error('Контакт не найден');
-        }
-    
-        return contact;
-    }
+  async remove(id: number): Promise<Contact> {
+    const contact = await this.contactModel.findByPk(id);
+    if (!contact) throw new HttpException('Контакт не найден', HttpStatus.NOT_FOUND);
 
-
-    async update(id: number, updateContactDto: UpdateContactDto): Promise<Contact> {
-        const contact = await this.contactModel.findByPk(id);
-        if (!contact) {
-            throw new Error('Контакт не найден');
-        }
-
-        await contact.update(updateContactDto);
-        return contact;
-    }
-
-
-    async remove(id: number): Promise<Contact> {
-        const contact = await this.contactModel.findByPk(id);
-        if (!contact) {
-            throw new Error('Контакт не найден');
-        }
-
-        await contact.destroy();
-        return contact;
-    }
-
-
-    async block(id: number): Promise<Contact> {
-        const contact = await this.contactModel.findByPk(id);
-        if (!contact) {
-            throw new Error('Контакт не найден');
-        }
-
-        await contact.update({ is_blocked: true });
-        return contact;
-    }
-
-    async unblock(id: number): Promise<Contact> {
-        const contact = await this.contactModel.findByPk(id);
-        if (!contact) {
-            throw new Error('Контакт не найден');
-        }
-
-        await contact.update({ is_blocked: false });
-        return contact;
-    }
+    await contact.destroy();
+    return contact;
+  }
 }
