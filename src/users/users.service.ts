@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './users.model';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -6,6 +6,7 @@ import { RolesService } from 'src/roles/roles.service';
 
 @Injectable()
 export class UsersService {
+    userModel: any;
     constructor(@InjectModel(User) private userRepository: typeof User,
         private roleService: RolesService) {
 
@@ -29,8 +30,16 @@ export class UsersService {
         return users
     }
 
-    async getUsersByEmail (email:string){
-        const user = await this.userRepository.findOne({where: {email}, include: ['roles']})
+    async findByEmail(email: string) {
+        const user = await this.userRepository.findOne({ where: { email } });
+        if (!user) {
+            throw new HttpException('Пользователь не найден', HttpStatus.NOT_FOUND);
+        }
+        return user;
+    }
+
+    async getUsersByEmail(email: string) {
+        const user = await this.userRepository.findOne({ where: { email }, include: ['roles'] })
         return user
     }
 }
