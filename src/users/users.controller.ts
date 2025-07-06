@@ -7,6 +7,8 @@ import { FindUserDto } from './dto/findByEmail.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.quard';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles-auth.decorator';
+import { addRoleDto } from './dto/add-role.dto';
+import { BunUserDto } from './dto/ban-user.dto';
 
 @ApiTags('Пользователи')
 @Controller('users')
@@ -31,7 +33,22 @@ export class UsersController {
     }
 
     @ApiOperation({ summary: 'Поиск пользователя по email' })
-    @ApiResponse({ status: 200, type: User })
+    @ApiOperation({ summary: 'Выдать роль' })
+    @ApiResponse({ status: 200})
+
+    @Post('/role')
+    addRole(@Body() dto: addRoleDto) {
+        return this.userService.addRole(dto)
+    }
+
+    @ApiOperation({ summary: 'Забанить пользователя' })
+    @ApiResponse({ status: 200})
+
+    @Post('/ban')
+    banRole(@Body() dto: BunUserDto) {
+        return this.userService.ban(dto)
+    }
+
     @ApiResponse({ status: 404, description: 'Пользователь не найден' })
     @Post('find')
     async findUserByEmail(@Body() dto: FindUserDto) {
