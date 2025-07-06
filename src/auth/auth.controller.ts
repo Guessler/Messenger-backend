@@ -19,6 +19,4 @@ export class AuthController {
         return this.authService.registration(userDto)
     }
 
-    // @Post('/logout')
-
 }
