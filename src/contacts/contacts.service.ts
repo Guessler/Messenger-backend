@@ -15,14 +15,12 @@ export class ContactsService {
   async create(dto: CreateContactDto): Promise<Contact> {
     const { owner_id, contact_id, nickname } = dto;
 
-    // Проверяем, что пользователи существуют
     const owner = await this.userModel.findByPk(owner_id);
     if (!owner) throw new HttpException('Владелец не найден', HttpStatus.NOT_FOUND);
 
     const contactUser = await this.userModel.findByPk(contact_id);
     if (!contactUser) throw new HttpException('Контакт не найден', HttpStatus.NOT_FOUND);
 
-    // Проверяем, что такой контакт ещё не добавлен
     const existing = await this.contactModel.findOne({
       where: { owner_id, contact_id },
     });
