@@ -16,6 +16,7 @@ import { Message } from './message/message.model';
 import { ContactsModule } from './contacts/contacts.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { Contact } from './contacts/contacts.model';
+import { MembersModule } from './member/member.module';
 
 @Module({
   imports: [
@@ -39,6 +40,8 @@ import { Contact } from './contacts/contacts.model';
     MessageModule,
     ContactsModule,
     ConversationsModule,
+    MembersModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService],

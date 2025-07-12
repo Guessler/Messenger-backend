@@ -1,42 +1,89 @@
-// src/message/message.model.ts
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import {
+    Column,
+    DataType,
+    Model,
+    Table,
+    ForeignKey,
+    BelongsTo,
+} from 'sequelize-typescript';
+
+import { User } from 'src/users/users.model';
+import { Workspace } from 'src/workspace/workspace.model';
 
 export interface MessageCreationArgs {
     content: string;
-    senderId: number;
-    recipientId: number;
+    senderId: string; // UUID
+    workspaceId: string; // UUID
+    isRead?: boolean;
 }
 
 @Table({ tableName: 'messages' })
 export class Message extends Model<Message, MessageCreationArgs> {
-    @ApiProperty({ example: '1', description: 'Уникальный идентификатор сообщения' })
+    @ApiProperty({
+        example: '1',
+        description: 'Уникальный идентификатор сообщения',
+    })
     @Column({
-        type: DataType.INTEGER,
+        type: DataType.UUID,
+        defaultValue: DataType.UUIDV4,
         unique: true,
-        autoIncrement: true,
         primaryKey: true,
     })
-    declare id: number;
+    declare id: string;
 
-    @ApiProperty({ example: 'Hello, World!', description: 'Содержимое сообщения' })
+    @ApiProperty({
+        example: 'Текст сообщения',
+        description: 'Содержание сообщения',
+    })
     @Column({
-        type: DataType.STRING,
+        type: DataType.TEXT,
         allowNull: false,
     })
     content: string;
 
-    @ApiProperty({ example: '1', description: 'ID отправителя' })
     @Column({
-        type: DataType.INTEGER,
+        type: DataType.DATE,
         allowNull: false,
+        field: 'send_at',
     })
-    senderId: number;
+    sendAt: Date;
 
-    @ApiProperty({ example: '1', description: 'ID получателя' })
+    @ApiProperty({
+        example: 'user-uuid-123',
+        description: 'ID отправителя',
+    })
+    @ForeignKey(() => User)
     @Column({
-        type: DataType.INTEGER,
+        type: DataType.UUID,
         allowNull: false,
     })
-    recipientId: number;
+    senderId: string;
+
+    @ApiProperty({
+        example: 'workspace-uuid-456',
+        description: 'ID воркспейса (чата)',
+    })
+    @ForeignKey(() => Workspace)
+    @Column({
+        type: DataType.UUID,
+        allowNull: false,
+    })
+    workspaceId: string;
+
+    @ApiProperty({
+        example: 'false',
+        description: 'Прочитано ли сообщение',
+    })
+    @Column({
+        type: DataType.BOOLEAN,
+        defaultValue: false,
+    })
+    isRead: boolean;
+
+    @BelongsTo(() => User, 'senderId')
+    sender: User;
+
+    @BelongsTo(() => Workspace, 'workspaceId')
+    workspace: Workspace;
 }

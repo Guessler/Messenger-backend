@@ -1,25 +1,26 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { CreateWorkspaceDto } from './dto/create-workspace.dto';
+import { Workspace } from './workspace.model';
 import { WorkspaceService } from './workspace.service';
-import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags('Рабочие-пространства')
 @Controller('workspaces')
 export class WorkspaceController {
-    constructor(private readonly workspaceService: WorkspaceService) {}
+    constructor(private readonly workspacesService: WorkspaceService) {}
 
     @Post()
-    async create(@Body() dto: CreateWorkspaceDto){
-        return this.workspaceService.create(dto)
+    async createWorkspace(
+        @Body('name') name: string,
+        @Body('type') type: string,
+    ): Promise<Workspace> {
+        return this.workspacesService.createWorkspace(name, type);
     }
 
     @Get()
-    async getAll() {
-        return this.workspaceService.getAll()
+    async getAllWorkspaces(): Promise<Workspace[]> {
+        return this.workspacesService.getAllWorkspaces();
     }
 
     @Get(':id')
-    async getById(@Param('id') id: number) {
-        return this.workspaceService.getById(id)
+    async getWorkspaceById(@Param('id') id: number): Promise<Workspace | null> {
+        return this.workspacesService.getWorkspaceById(id);
     }
 }

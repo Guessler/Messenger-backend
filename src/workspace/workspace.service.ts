@@ -1,23 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Workspace } from './workspace.model';
-import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 
 @Injectable()
 export class WorkspaceService {
-    constructor(@InjectModel(Workspace) private WorkspaceRepository: typeof Workspace) { }
+    constructor(
+        @InjectModel(Workspace)
+        private workspaceRepository: typeof Workspace,
+    ) {}
 
-    async create(dto: CreateWorkspaceDto): Promise<Workspace> {
-        return this.WorkspaceRepository.create(dto);
+    async createWorkspace(name: string, type: string): Promise<Workspace> {
+        return this.workspaceRepository.create({ name, type });
     }
 
-    async getAll() {
-        return this.WorkspaceRepository.findAll()
+    async getAllWorkspaces(): Promise<Workspace[]> {
+        return this.workspaceRepository.findAll();
     }
 
-    async getById(id: number) {
-        const workspace = await this.WorkspaceRepository.findByPk(id);
-        if (!workspace) throw new Error('Воркспейс не найден');
-        return workspace
+    async getWorkspaceById(id: number): Promise<Workspace | null> {
+        return this.workspaceRepository.findByPk(id);
     }
 }

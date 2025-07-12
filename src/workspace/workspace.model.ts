@@ -1,15 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, DataType, Model, Table, BelongsToMany } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
+import { User } from 'src/users/users.model';
 
-export interface WorkspaceCreationArgs {
-    name: string;
-    ownerId: number;
-    roles?: string[];
+enum Type {
+    PRIVATE = 'PRIVATE',
+    GROUP = 'GROUP'
 }
 
 @Table({ tableName: 'workspaces' })
-export class Workspace extends Model<Workspace, WorkspaceCreationArgs> {
-    @ApiProperty({ example: '1', description: 'Уникальный идентификатор' })
+export class Workspace extends Model<Workspace> {
+    @ApiProperty({ example: 1, description: 'Уникальный идентификатор' })
     @Column({
         type: DataType.INTEGER,
         unique: true,
@@ -18,17 +18,19 @@ export class Workspace extends Model<Workspace, WorkspaceCreationArgs> {
     })
     declare id: number;
 
-    @ApiProperty({ example: 'Рабочая группа', description: 'Название воркспейса' })
+
+    @ApiProperty({ example: 1, description: 'ID создателя пространства' })
+    @ForeignKey(() => User)
     @Column({
         type: DataType.STRING,
         allowNull: false,
     })
-    name: string;
+    name: number;
 
-    @ApiProperty({ example: '1', description: 'ID владельца воркспейса' })
+    @ApiProperty({ example: 1, description: 'ID человека, которому написали'})
     @Column({
-        type: DataType.INTEGER,
+        type: DataType.STRING,
         allowNull: false,
     })
-    ownerId: number;
+    type: Type
 }
