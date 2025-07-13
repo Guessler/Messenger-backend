@@ -24,7 +24,7 @@ export class MembersService {
     async getMembersByWorkspace(workspaceId: number): Promise<Member[]> {
         return this.memberRepository.findAll({
             where: { workspaceId },
-            include: [{ model: User, as: 'user' }], // ✅ Подгружаем User
+            include: [{ model: User, as: 'user' }],
         });
     }
 

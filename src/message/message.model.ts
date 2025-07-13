@@ -13,24 +13,24 @@ import { Workspace } from 'src/workspace/workspace.model';
 
 export interface MessageCreationArgs {
     content: string;
-    senderId: string; // UUID
-    workspaceId: string; // UUID
+    senderId: number;
+    workspaceId: number;
     isRead?: boolean;
 }
 
 @Table({ tableName: 'messages' })
 export class Message extends Model<Message, MessageCreationArgs> {
     @ApiProperty({
-        example: '1',
+        example: 1,
         description: 'Уникальный идентификатор сообщения',
     })
     @Column({
-        type: DataType.UUID,
-        defaultValue: DataType.UUIDV4,
+        type: DataType.INTEGER,
+        autoIncrement: true,
         unique: true,
         primaryKey: true,
     })
-    declare id: string;
+    declare id: number;
 
     @ApiProperty({
         example: 'Текст сообщения',
@@ -45,34 +45,33 @@ export class Message extends Model<Message, MessageCreationArgs> {
     @Column({
         type: DataType.DATE,
         allowNull: false,
-        field: 'send_at',
     })
     sendAt: Date;
 
     @ApiProperty({
-        example: 'user-uuid-123',
+        example: 123,
         description: 'ID отправителя',
     })
     @ForeignKey(() => User)
     @Column({
-        type: DataType.UUID,
+        type: DataType.INTEGER,
         allowNull: false,
     })
-    senderId: string;
+    senderId: number;
 
     @ApiProperty({
-        example: 'workspace-uuid-456',
+        example: 456,
         description: 'ID воркспейса (чата)',
     })
     @ForeignKey(() => Workspace)
     @Column({
-        type: DataType.UUID,
+        type: DataType.INTEGER,
         allowNull: false,
     })
-    workspaceId: string;
+    workspaceId: number;
 
     @ApiProperty({
-        example: 'false',
+        example: false,
         description: 'Прочитано ли сообщение',
     })
     @Column({
